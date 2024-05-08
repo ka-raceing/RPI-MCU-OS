@@ -16,10 +16,10 @@ RUN apt-get install -y wget zip unzip fdisk nano curl xz-utils
 WORKDIR /rpi-kernel
 RUN git clone https://github.com/raspberrypi/linux.git -b ${LINUX_KERNEL_BRANCH} --depth=1
 WORKDIR /rpi-kernel/linux
-RUN export PATCH=$(curl -s https://mirrors.edge.kernel.org/pub/linux/kernel/projects/rt/${LINUX_KERNEL_VERSION}/ | sed -n 's:.*<a href="\(.*\).patch.gz">.*:\1:p' | sort -V | tail -1) && \
-    echo "Downloading patch ${PATCH}" && \
-    curl https://mirrors.edge.kernel.org/pub/linux/kernel/projects/rt/${LINUX_KERNEL_VERSION}/${PATCH}.patch.gz --output ${PATCH}.patch.gz && \
-    gzip -cd /rpi-kernel/linux/${PATCH}.patch.gz | patch -p1 --verbose
+RUN export PATCH=$(curl -s https://mirrors.edge.kernel.org/pub/linux/kernel/projects/rt/${LINUX_KERNEL_VERSION}/ | sed -n 's:.*<a href="\(.*\).patch.gz">.*:\1:p' | sort -V | tail -1)
+RUN    echo "Downloading patch ${PATCH}" 
+RUN    curl https://mirrors.edge.kernel.org/pub/linux/kernel/projects/rt/${LINUX_KERNEL_VERSION}/${PATCH}.patch.gz --output ${PATCH}.patch.gz
+RUN    gzip -cd /rpi-kernel/linux/${PATCH}.patch.gz | patch -p1 --verbose
 
 ARG PLATFORM32
 
@@ -56,8 +56,8 @@ RUN apt -y install
 RUN export DATE=$(curl -s https://downloads.raspberrypi.org/${RASPIOS_IMAGE_NAME}/images/ | sed -n "s:.*${RASPIOS_IMAGE_NAME}-\(.*\)/</a>.*:\1:p" | tail -1) && \
     export RASPIOS=$(curl -s https://downloads.raspberrypi.org/${RASPIOS_IMAGE_NAME}/images/${RASPIOS_IMAGE_NAME}-${DATE}/ | sed -n "s:.*<a href=\"\(.*\).xz\">.*:\1:p" | tail -1) && \
     echo "Downloading ${RASPIOS}.xz" && \
-    curl https://downloads.raspberrypi.org/${RASPIOS_IMAGE_NAME}/images/${RASPIOS_IMAGE_NAME}-${DATE}/${RASPIOS}.xz --output ${RASPIOS}.xz && \
-    xz -d ${RASPIOS}.xz
+    curl -fSL https://downloads.raspberrypi.org/${RASPIOS_IMAGE_NAME}/images/${RASPIOS_IMAGE_NAME}-${DATE}/${RASPIOS}.xz --output ${RASPIOS}.xz && \
+    xz -d ${RASPIOS}.xz || echo "Failed to decompress ${RASPIOS}.xz. Please check the file format and download link."
 
 RUN mkdir /raspios/mnt && mkdir /raspios/mnt/disk && mkdir /raspios/mnt/boot
 ADD build.sh ./build.sh
