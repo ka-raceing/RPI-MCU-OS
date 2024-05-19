@@ -69,4 +69,7 @@ USER root
 RUN echo 'kit23rpi' > /etc/hostname
 RUN echo "\n# Custom static IP address for eth0.\ninterface eth0\nstatic ip_address=192.168.24.4/16\nstatic routers=192.168.1.1\nstatic domain_name_servers=192.168.1.1" > /etc/dhcpcd.conf
 
+RUN apt-get -y install can-utils 
+RUN apt-get -y install i2c-tools
+
 WORKDIR /raspios
