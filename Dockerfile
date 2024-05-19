@@ -62,3 +62,11 @@ RUN export DATE=$(curl -s https://downloads.raspberrypi.org/${RASPIOS_IMAGE_NAME
 RUN mkdir /raspios/mnt && mkdir /raspios/mnt/disk && mkdir /raspios/mnt/boot
 ADD build.sh ./build.sh
 ADD config.txt ./
+
+WORKDIR /etc
+USER root
+
+RUN echo 'kit23rpi' > /etc/hostname
+RUN echo "\n# Custom static IP address for eth0.\ninterface eth0\nstatic ip_address=192.168.24.4/16\nstatic routers=192.168.1.1\nstatic domain_name_servers=192.168.1.1" > /etc/dhcpcd.conf
+
+WORKDIR /raspios
