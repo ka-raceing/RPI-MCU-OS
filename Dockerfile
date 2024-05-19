@@ -67,9 +67,13 @@ WORKDIR /etc
 USER root
 
 RUN echo 'kit23rpi' > /etc/hostname
-RUN echo "\n# Custom static IP address for eth0.\ninterface eth0\nstatic ip_address=192.168.24.4/16\nstatic routers=192.168.1.1\nstatic domain_name_servers=192.168.1.1" > /etc/dhcpcd.conf
+RUN echo "# Custom static IP address for eth0.\ninterface eth0\nstatic ip_address=192.168.24.4/16\nstatic routers=192.168.1.1\nstatic domain_name_servers=192.168.1.1" > /etc/dhcpcd.conf
 
 RUN apt-get -y install can-utils 
 RUN apt-get -y install i2c-tools
+
+WORKDIR /etc/network
+
+RUN echo "auto can0\niface can0 inet manual\n    pre-up /sbin/ip link set can0 type can bitrate 1000000 triple-sampling on restart-ms 10\n    up /sbin/ifconfig can0 up\n    down /sbin/ifconfig can0 down\n\nauto can1\niface can1 inet manual\n    pre-up /sbin/ip link set can1 type can bitrate 1000000 triple-sampling on restart-ms 10\n    up /sbin/ifconfig can1 up\n    down /sbin/ifconfig can1 down\n\nauto can2\niface can2 inet manual\n    pre-up /sbin/ip link set can2 type can bitrate 1000000 triple-sampling on restart-ms 10\n    up /sbin/ifconfig can2 up\n    down /sbin/ifconfig can2 down\n\nauto can3\niface can3 inet manual\n    pre-up /sbin/ip link set can3 type can bitrate 1000000 triple-sampling on restart-ms 10\n    up /sbin/ifconfig can3 up\n    down /sbin/ifconfig can3 down" > interfaces
 
 WORKDIR /raspios
